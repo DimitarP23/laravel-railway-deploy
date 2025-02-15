@@ -35,7 +35,27 @@ ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
+# Configure Apache for Laravel
+RUN echo '<Directory /var/www/html/public>\n\
+    Options Indexes FollowSymLinks\n\
+    AllowOverride All\n\
+    Require all granted\n</Directory>' > /etc/apache2/conf-available/laravel.conf
+
+RUN a2enconf laravel
+
 # Create storage directory and set permissions
 RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chown -R www-data:www-data /var/www/html
 RUN chmod -R 775 /var/www/html
+
+# Copy application files
+COPY . /var/www/html/
+
+# Install dependencies
+RUN composer install --no-interaction --optimize-autoloader
+
+# Set final permissions
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+EXPOSE 80
+CMD ["apache2-foreground"]
