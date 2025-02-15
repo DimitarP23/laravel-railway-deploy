@@ -42,7 +42,7 @@
 
                     <div class="mb-3">
                         <button type="submit" class="btn btn-primary">Login</button>
-                        <a href="{{ route('password.request') }}" class="btn btn-link">Forgot Your Password?</a>
+                    <strong>Forgot Your Password(temporary unavailable)?</strong>
                     </div>
 
                     <div class="alert alert-info">

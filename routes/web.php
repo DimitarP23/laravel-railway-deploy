@@ -51,7 +51,7 @@ Route::middleware('auth')->group(function () {
 
     // Stocks route
     Route::get('/stocks', [StockController::class, 'index'])->name('stocks');
-    
+
     // Error Pages management routes - protected by auth
     Route::resource('error-pages', ErrorPageController::class);
 });
