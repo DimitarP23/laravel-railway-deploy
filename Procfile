@@ -1,1 +1,0 @@
-web: php artisan serve --host=0.0.0.0 --port=$PORT & php artisan config:clear && php artisan session:table && php artisan migrate:fresh --force
