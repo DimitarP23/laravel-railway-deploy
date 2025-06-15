@@ -16,8 +16,21 @@ return new class extends Migration
         DB::table('error_pages')->truncate();
 
         Schema::table('error_pages', function (Blueprint $table) {
-            $table->foreignId('user_id')->after('id')->constrained()->onDelete('cascade');
-            $table->index('user_id'); // Index for better performance
+            // Only add user_id column if it doesn't exist
+            if (!Schema::hasColumn('error_pages', 'user_id')) {
+                $table->foreignId('user_id')->after('id')->constrained()->onDelete('cascade');
+                $table->index('user_id'); // Index for better performance
+            } else {
+                // Column exists but might not have foreign key constraint
+                // Drop and recreate the foreign key constraint if needed
+                try {
+                    $table->dropForeign(['user_id']);
+                } catch (Exception $e) {
+                    // Foreign key might not exist, continue
+                }
+                $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+                $table->index('user_id'); // Ensure index exists
+            }
         });
     }
 
@@ -27,8 +40,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('error_pages', function (Blueprint $table) {
-            $table->dropForeign(['user_id']);
-            $table->dropColumn('user_id');
+            if (Schema::hasColumn('error_pages', 'user_id')) {
+                $table->dropForeign(['user_id']);
+                $table->dropColumn('user_id');
+            }
         });
     }
 };
