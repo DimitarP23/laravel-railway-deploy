@@ -1,133 +1,81 @@
-                Test Plan 
+# MyWallet - Laravel Stock Portfolio App
 
-1. ---------->Login System<----------
-As a user, I want to log in to access my account
-Paths:
-  *Happy Path: User logs in with correct credentials
-  *Unhappy Path: User attempts login with invalid credentials
-  *System Test Coverage (LoginTest.php):
+## Assignment 3: Hacktivist - IDOR Prevention Implementation
 
-```php
-public function test_user_can_login_with_correct_credentials()
-{
-    // Scenario: Successful Login
-    // 1. Creates a test user
-    // 2. Attempts login with correct credentials
-    // 3. Verifies user is authenticated and redirected
-}
-```
+This Laravel application demonstrates **Insecure Direct Object Reference (IDOR) prevention** using the **Principle of Least Privilege** in a stock portfolio management system.
 
-- Covers: Complete login workflow
-    *Verifies: Authentication success and proper redirection
-    *Tests: Integration between authentication, session, and routing
-    *Unit Test Coverage (LoginValidationTest.php):
+## 🔒 IDOR Prevention Features
 
-```php
-public function test_email_validation()
-{
-    // Tests email format validation in isolation
-    // 1. Tests invalid email format
-    // 2. Tests valid email format
-}
-```
+### **Stock Portfolio Management System**
+Users can manage their personal stock portfolio with complete isolation between users.
 
-- Covers: Email validation logic
-     *Verifies: Input validation rules
-     *Tests: Email format validation in isolation
+**Key Features Implemented:**
+- ✅ **User-specific data access** - Users can only view/edit/delete their own stocks
+- ✅ **Authorization policies** - Server-side ownership validation
+- ✅ **Session security** - HTTPS-only, HTTP-only, strict SameSite cookies
+- ✅ **CSRF protection** - All forms protected against cross-site attacks
 
+## 🧪 Testing IDOR Prevention (For Teachers)
 
+### **Step 1: Create Test Users**
+1. Visit the hosted app and register 2 different user accounts:
+   - User A: `user1@test.com`
+   - User B: `user2@test.com`
 
-2. ---------->Password Reset<----------
-As a user, I want to reset my password when I forget it
-Paths:
-  *Happy Path: User successfully requests password reset
-  *Unhappy Path: User enters invalid email for reset
-  *System Test Coverage (PasswordResetTest.php):
+### **Step 2: Add Stocks to Each User**
+1. **Login as User A** and navigate to **"My Stocks"**
+2. Add a few stocks to User A's portfolio
+3. **Logout and login as User B** 
+4. Add different stocks to User B's portfolio
 
-```php
-public function test_user_can_request_password_reset()
-{
-    // Scenario: Password Reset Request
-    // 1. Creates a test user
-    // 2. Submits password reset request
-    // 3. Verifies success message
-}
-```
+### **Step 3: Test IDOR Prevention**
 
-- Covers: Password reset request workflow
-    *Verifies: Reset link generation and session messages
-    *Tests: Integration between user system and notification system
-Unit Test Coverage (PasswordResetValidationTest.php):
+#### **URLs to Test:**
+- **Portfolio Management:** `/my-stocks`
+- **Add Stock:** `/my-stocks/create`
+- **Edit Stock:** `/my-stocks/{id}/edit`
+- **View Stock:** `/my-stocks/{id}`
 
-```php
-public function test_new_password_meets_requirements()
-{
-    // Tests password requirements validation
-    // 1. Validates password strength rules
-    // 2. Checks all requirements are met
-}
-```
+#### **IDOR Attack Scenarios:**
+1. **Login as User A** and note a stock ID from the URL (e.g., `/my-stocks/5`)
+2. **Login as User B** and try to access User A's stock:
+   - Navigate to `/my-stocks/5` (User A's stock)
+   - Try to edit: `/my-stocks/5/edit`
 
-- Covers: Password validation rules
-    *Verifies: Password strength requirements
-    *Tests: Password validation logic in isolation
+**Expected Behavior:** ❌ **Access Denied** - User B cannot access User A's data
 
+### **Step 4: Verify Security Headers**
+Open browser developer tools and check for security headers:
+- `Set-Cookie` with `HttpOnly`, `Secure`, `SameSite=strict`
+- CSRF tokens in all forms
 
-Test Coverage Matrix
-| Feature | Test Type | Path Type | What's Tested        | What's Not Tested    |
-|---------|-----------|-----------|----------------------|----------------------|
-| Login   | System    | Happy     | Full login flow      | Email delivery       |
-| Login   | System    | Unhappy   | Invalid credentials  | Concurrent logins    |
-| Login   | Unit      | N/A       | Email validation     | Database interactions|
-| Reset   | System    | Happy     | Reset request flow   | Token expiration     |
-| Reset   | System    | Unhappy   | Invalid reset request| Email bounces        |
-| Reset   | Unit      | N/A       | Password validation  | Email sending        |
+## 🔧 Technical Implementation
 
-to run the tests use: php artisan test
+### **Multi-Layer IDOR Prevention:**
 
-TEST RESULTS:
-![Test results](assets/test.png)
+1. **Database Level:** Foreign key constraints ensure data ownership
+2. **Model Level:** Scoped queries filter by authenticated user
+3. **Controller Level:** Authorization policies validate ownership
+4. **Route Level:** Authentication middleware protects all endpoints
 
+### **Key Security Features:**
+- **User Isolation:** `ErrorPage::forUser(auth()->id())`
+- **Policy Authorization:** `$this->authorize('view', $stock)`
+- **Session Security:** Strict cookie settings
+- **Input Validation:** All user inputs validated and sanitized
 
-TEST EVALUATION:
+## 🚀 Live Demo URLs
 
-1. Detectable Mistakes/Errors
-The tests can detect these critical errors:
-- Invalid login credentials (wrong password or email)
-- Incorrect email addresses 
-- Passwords that do not meet the security requirements:
-  - Too short (less than 10 characters)
-  - Misssing required characters (numbers, symbols)
-  - Missing mixed case letters
-- Attempts to reset password for accounts that do not exist
+- **Home:** `/`
+- **Login:** `/login` 
+- **Register:** `/register`
+- **My Stocks:** `/my-stocks` (requires authentication)
+- **Hot Stocks:** `/stocks` (public stock prices)
 
- 2. Non-Detectable Mistakes/Errors
-The tests cannot detect issues like:
-- Email delivery failures (can't verify if reset emails actually arrive)
-- Real-world timing issues with token expiration
-- Database connection problems in production
-- Multiple concurrent login attempts from same user
-- The server Performance under heavy load
+## 📝 Note for Teachers
 
- 3. Conclusion: 
-In conclusion i want to say that after implementign and running the tests the core functionality works correctly to the following extent:
+The application uses **"My Stocks"** in the navigation to access the portfolio management system where IDOR prevention is implemented. Each user can only manage their own stock portfolio, and any attempt to access another user's data will be blocked by the authorization system.
 
-(+) What we do guarantee:
-- User authentication logic works (login success/failure)
-- Password validation rules r applied
-- Reset password requests are processed
-- Input validation is working
+**Test Authentication:** Try accessing `/my-stocks` without logging in - you'll be redirected to login page (access control working).
 
-(-) What we dont guarantee:
-- Email system reliability
-- Database performance in production
-- Security against all possible attack vectors
-- Real-world token expiration behavior
-
-My arguments that it works correctly to the extent that i mentioned above are the following:
-1. Our tests cover both happy and unhappy paths for core features
-2. We test both system integration and individual components
-3. Input validation is thoroughly tested
-4. However external systems and real-world conditions remain outside our test scope
-
- While i am confident in the core authentication logic of the app, I cannot claim "everything" works correctly, as some aspects depend on external systems and real-world conditions that the tests cannot fully simulate.
+**Test IDOR:** Try changing stock IDs in URLs when logged in as different users - access will be denied (IDOR prevention working).

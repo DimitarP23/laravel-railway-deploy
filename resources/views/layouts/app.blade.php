@@ -22,7 +22,7 @@
                     @auth
                     <a class="nav-link" href="{{ route('stocks') }}">Hot Stocks</a>
                     <a class="nav-link" href="/contact">Contact Us</a>
-                    <a class="nav-link" href="{{ route('error-pages.index') }}">Add Stocks</a>
+                    <a class="nav-link" href="{{ route('my-stocks.index') }}">My Stocks</a>
                     @endauth
                 </div>
 

@@ -8,7 +8,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\ErrorPageController;
+use App\Http\Controllers\MyStockController;
 
 Route::get('/', function () {
     return view('home');
@@ -49,9 +49,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/contact', [ContactController::class, 'show']);
     Route::post('/contact', [ContactController::class, 'submit']);
 
-    // Stocks route
+    // Stocks route - shows hot stocks
     Route::get('/stocks', [StockController::class, 'index'])->name('stocks');
 
-    // Error Pages management routes - protected by auth
-    Route::resource('error-pages', ErrorPageController::class);
+    // My Stocks management routes - for user's personal stock portfolio
+    Route::resource('my-stocks', MyStockController::class, [
+        'names' => [
+            'index' => 'my-stocks.index',
+            'create' => 'my-stocks.create',
+            'store' => 'my-stocks.store',
+            'show' => 'my-stocks.show',
+            'edit' => 'my-stocks.edit',
+            'update' => 'my-stocks.update',
+            'destroy' => 'my-stocks.destroy',
+        ]
+    ]);
 });
