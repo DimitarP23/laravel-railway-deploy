@@ -10,13 +10,13 @@
                 <div class="card-header">Edit Stock in Portfolio</div>
 
                 <div class="card-body">
-                    <form action="{{ route('my-stocks.update', $stock) }}" method="POST">
+                    <form action="{{ route('my-stocks.update', $myStock) }}" method="POST">
                         @csrf
                         @method('PUT')
 
                         <div class="mb-3">
                             <label for="error_code" class="form-label">Stock Code</label>
-                            <input type="number" name="error_code" id="error_code" class="form-control @error('error_code') is-invalid @enderror" value="{{ old('error_code', $stock->error_code) }}" required>
+                            <input type="number" name="error_code" id="error_code" class="form-control @error('error_code') is-invalid @enderror" value="{{ old('error_code', $myStock->error_code) }}" required>
                             @error('error_code')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -25,7 +25,7 @@
 
                         <div class="mb-3">
                             <label for="title" class="form-label">Stock Name</label>
-                            <input type="text" name="title" id="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title', $stock->title) }}" required>
+                            <input type="text" name="title" id="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title', $myStock->title) }}" required>
                             @error('title')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -33,7 +33,7 @@
 
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
-                            <textarea name="description" id="description" class="form-control @error('description') is-invalid @enderror" rows="4" required>{{ old('description', $stock->description) }}</textarea>
+                            <textarea name="description" id="description" class="form-control @error('description') is-invalid @enderror" rows="4" required>{{ old('description', $myStock->description) }}</textarea>
                             @error('description')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

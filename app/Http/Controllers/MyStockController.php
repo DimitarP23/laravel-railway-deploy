@@ -54,41 +54,41 @@ class MyStockController extends Controller
     /**
      * Display the specified stock.
      */
-    public function show(ErrorPage $stock)
+    public function show(ErrorPage $myStock)
     {
         // IDOR Prevention: Ensure user owns this stock
-        $this->authorize('view', $stock);
+        $this->authorize('view', $myStock);
 
-        return view('my-stocks.show', compact('stock'));
+        return view('my-stocks.show', compact('myStock'));
     }
 
     /**
      * Show the form for editing the specified stock.
      */
-    public function edit(ErrorPage $stock)
+    public function edit(ErrorPage $myStock)
     {
         // IDOR Prevention: Ensure user owns this stock
-        $this->authorize('update', $stock);
+        $this->authorize('update', $myStock);
 
-        return view('my-stocks.edit', compact('stock'));
+        return view('my-stocks.edit', compact('myStock'));
     }
 
     /**
      * Update the specified stock.
      */
-    public function update(Request $request, ErrorPage $stock)
+    public function update(Request $request, ErrorPage $myStock)
     {
         // IDOR Prevention: Ensure user owns this stock
-        $this->authorize('update', $stock);
+        $this->authorize('update', $myStock);
 
         $validated = $request->validate([
-            'error_code' => 'required|integer|min:1|unique:error_pages,error_code,' . $stock->id,
+            'error_code' => 'required|integer|min:1|unique:error_pages,error_code,' . $myStock->id,
             'title' => 'required|string|max:255',
             'description' => 'required|string',
         ]);
 
         // Note: We don't update user_id to prevent ownership transfer
-        $stock->update($validated);
+        $myStock->update($validated);
 
         return redirect()->route('my-stocks.index')
             ->with('success', 'Stock updated successfully!');
@@ -97,12 +97,12 @@ class MyStockController extends Controller
     /**
      * Remove the specified stock.
      */
-    public function destroy(ErrorPage $stock)
+    public function destroy(ErrorPage $myStock)
     {
         // IDOR Prevention: Ensure user owns this stock
-        $this->authorize('delete', $stock);
+        $this->authorize('delete', $myStock);
 
-        $stock->delete();
+        $myStock->delete();
 
         return redirect()->route('my-stocks.index')
             ->with('success', 'Stock removed from your portfolio!');
